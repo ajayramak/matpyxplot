@@ -1,3 +1,5 @@
+# Ajayrama Kumaraswamy, 6th Jan 2015
+
 from matpyxplot import plt
 import numpy as np
 import math
@@ -39,6 +41,6 @@ canvas.addGraphRightOf(g2, g1, margin)
 canvas.addGraphBelowOf(g3, g1, margin)
 canvas.addGraphRightOf(g4, g3, margin)
 
-canvas.writeEPS('example.eps')
-canvas.writePDF('example.pdf')
-# canvas.writeAndOpen('example.pdf')
+canvas.writeEPS('example1.eps')
+canvas.writePDF('example1.pdf')
+# canvas.writeAndOpen('example1.pdf')

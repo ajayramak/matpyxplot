@@ -1,4 +1,4 @@
 .idea
 .directory
-example.pdf
-example.eps
+*.pdf
+*.eps

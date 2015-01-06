@@ -1,3 +1,5 @@
+# Ajayrama Kumaraswamy, 6th Jan 2015
+
 import pyx
 import subprocess
 import math
@@ -32,9 +34,23 @@ class Graph(object):
     }
 
 
-    def __init__(self, xpos=0, ypos=0, width=None, height=None, ratio=goldenMean, legend=None):
+    def __init__(self, width=None, height=None, ratio=goldenMean):
+
+        '''
+
+        Either widht or height must be specified.
+
+        :param width: width of graph in cm
+        :param height: height of graph in cm
+        :param ratio: widht/height
+        :return: graph object
+        '''
 
         assert width is not None or height is not None, 'Either height or width must be specified'
+
+        if width is not None and height is not None:
+
+            assert ratio == width / height, 'Ratio is not width/height'
 
         if height is None:
 
@@ -48,9 +64,8 @@ class Graph(object):
 
 
         self.plots = []
-        self.xpos = xpos
-        self.ypos = ypos
-        self.legend = legend
+        self.xpos = 0
+        self.ypos = 0
         self.plots = []
         self.datas = []
         self.styles = []
@@ -60,6 +75,16 @@ class Graph(object):
 
 
     def setXAxisParams(self, type='linear', label=None, manualTicks=[], min=None, max=None):
+
+        '''
+
+        :param type: The type of the axis. 'linear' or 'log'. Only 'linear' supported
+        :param label: axis label
+        :param manualTicks: axis manual ticks, Will override autmatically generated ones.
+        :param min: axis lower limit
+        :param max: axis upper limit
+        :return:
+        '''
 
         if type == 'linear':
 
@@ -75,6 +100,16 @@ class Graph(object):
 
     def setYAxisParams(self, type='linear', label=None, manualTicks=[], min=None, max=None):
 
+        '''
+
+        :param type: The type of the axis. 'linear' or 'log'. Only 'linear' supported
+        :param label: axis label
+        :param manualTicks: axis manual ticks, Will override autmatically generated ones.
+        :param min: axis lower limit
+        :param max: axis upper limit
+        :return:
+        '''
+
         if type == 'linear':
 
             self.yAxis = pyx.graph.axis.axis.linear(
@@ -89,10 +124,28 @@ class Graph(object):
 
     def showLegend(self, pos='tr'):
 
+        '''
+        Insert a legend
+        :param pos: Specify where to place the legend. 'tr' for top right and 'bl' for lower bottom
+        :return:
+        '''
+
         self.drawLegend = True
         self.legendPos = pos
 
     def plot(self, x, y, c='b', ls='-', m='None', mfc='None', title=''):
+
+        '''
+
+        :param x: iterable containing x axis values of the points
+        :param y: iterable containing y axis values of the points
+        :param c: string specifying color. One of {'r', 'g', 'b', 'k', 'm', 'y', }
+        :param ls: string specifying line style. '-'(continous), ':'(dotted), '--'(dashed), '.-'(dot-dash)
+        :param m: string specifiying marker. 's'(square), 'o'(circle), 'd'(diamond), 'x'(crosss), '+'(plus), '^'(upright triangle)
+        :param mfc: string specifiying marker face color. Same as param c
+        :param title: tag string to use in legend.
+        :return:
+        '''
 
         self.datas.append(pyx.graph.data.values(x=x, y=y, title=title))
 
@@ -119,6 +172,11 @@ class Graph(object):
 
 
     def draw(self):
+
+        '''
+        Draws the graph using pyx
+        :return:
+        '''
 
         args = dict(width=self.width,
                                   height=self.height,
@@ -155,11 +213,29 @@ class Canvas(object):
         self.graphs = []
         self.drawn = False
 
-    def addGraph(self, graph):
+    def addGraph(self, graph, xpos=0, ypos=0):
+        '''
+        Add a graph to the canvas. The graph is placed at (0, 0) of the canvas
+        :param graph: a Graph object.
+        :param xpos: xpos of the lower bottom corner of the graph in the canvas
+        :param ypos: ypos of the lower bottom corner of the graph in the canvas
+        :return:
+        '''
+
+        graph.xpos = xpos
+        graph.ypos = ypos
         self.graphs.append(graph)
 
 
     def addGraphBelowOf(self, graphToAdd, refGraph, distance=1):
+
+        '''
+        Add a graph to the canvas below an already added graph
+        :param graphToAdd: Graph object
+        :param refGraph: Graph Object
+        :param distance: vertical distance between graphToAdd and refGraph in cm
+        :return:
+        '''
 
         graphToAdd.xpos = refGraph.xpos
         graphToAdd.ypos = refGraph.ypos - graphToAdd.height - distance
@@ -167,11 +243,24 @@ class Canvas(object):
 
     def addGraphRightOf(self, graphToAdd, refGraph, distance=1):
 
+        '''
+        Add a graph to the canvas to the right of an already added graph
+        :param graphToAdd: Graph Object
+        :param refGraph: Graph Object
+        :param distance: horizontal distance between graphToAdd and refGraph in cm
+        :return:
+        '''
+
         graphToAdd.ypos = refGraph.ypos
         graphToAdd.xpos = refGraph.xpos + graphToAdd.width + distance
         self.graphs.append(graphToAdd)
 
     def draw(self):
+
+        '''
+        Draws the canvas and it's graphs in pyx
+        :return:
+        '''
 
         if len(self.graphs) == 0:
             raise(AttributeError('Please add a few graphs to the canvas using addGraph...() funcs'))
@@ -186,6 +275,12 @@ class Canvas(object):
 
     def writeAndOpen(self, fName):
 
+        '''
+        Writes PDF and opens with evince. Works only in linux.
+        :param fName: filename of the output PDF file.
+        :return:
+        '''
+
         if not self.drawn:
             self.draw()
         self.canvas.writePDFfile(fName)
@@ -194,12 +289,24 @@ class Canvas(object):
 
     def writePDF(self, fName):
 
+        '''
+        Writes PDF.
+        :param fName: filename of the output PDF file.
+        :return:
+        '''
+
         if not self.drawn:
             self.draw()
 
         self.canvas.writePDFfile(fName)
 
     def writeEPS(self, fName):
+
+        '''
+        Writes EPS.
+        :param fName: filename of the output EPS file.
+        :return:
+        '''
 
         if not self.drawn:
             self.draw()
